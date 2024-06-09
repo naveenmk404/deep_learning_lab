@@ -65,22 +65,27 @@ test_predict = scaler.inverse_transform(model.predict(X_test))
 
 # Prepare data for plotting
 def plot_predictions(data, train_predict, test_predict, time_step):
-    train_plot = np.empty_like(data)
-    test_plot = np.empty_like(data)
-    train_plot[:, :] = np.nan
-    test_plot[:, :] = np.nan
-    train_plot[time_step:len(train_predict) + time_step, :] = train_predict
-    test_plot[len(train_predict) + (time_step * 2) + 1:len(data) - 1, :] = test_predict
+
+    predictions = np.empty_like(data)
+    predictions[:, :] = np.nan
     
+    # Place the training predictions in the appropriate positions
+    predictions[time_step:len(train_predict) + time_step, :] = train_predict
+    
+    # Place the testing predictions in the appropriate positions
+    test_start_index = len(train_predict) + (time_step * 2) + 1
+    predictions[test_start_index:test_start_index + len(test_predict), :] = test_predict
+
+    # Plot the original data
     plt.figure(figsize=(10, 6))
     plt.plot(data, label='Original Data')
-    plt.plot(train_plot, label='Train Predict')
-    plt.plot(test_plot, label='Test Predict')
+    plt.plot(predictions, label='Predictions')
     plt.title('Stock Price Prediction')
     plt.xlabel('Date')
     plt.ylabel('Stock Price')
     plt.legend()
     plt.show()
 
+# Call the simplified plot function
 plot_predictions(data, train_predict, test_predict, time_step)
 
